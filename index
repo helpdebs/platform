@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Help Debs • Teste de Login</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #1c1c28;
+      --muted: #6a6a7a;
+      --border: #dcddea;
+      --accent: #7c6cff;
+      --accent-2: #eae7ff;
+      --danger: #c73434;
+      --success: #1f8f53;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 460px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+    }
+
+    h1, h2 {
+      margin: 0 0 8px;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .brand {
+      font-size: 14px;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .stack { display: grid; gap: 14px; }
+    .hidden { display: none !important; }
+
+    label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    input, textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 15px;
+      background: #fff;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+      font-family: inherit;
+    }
+
+    .actions {
+      display: grid;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--accent);
+      color: white;
+    }
+
+    button.secondary {
+      background: white;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .status {
+      margin-top: 16px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      line-height: 1.4;
+      border: 1px solid var(--border);
+      background: #fff;
+      white-space: pre-wrap;
+    }
+
+    .status.error {
+      color: var(--danger);
+      border-color: #f0c7c7;
+      background: #fff5f5;
+    }
+
+    .status.success {
+      color: var(--success);
+      border-color: #c8ebd7;
+      background: #f3fff7;
+    }
+
+    .status.info {
+      color: #334;
+      background: #fafaff;
+    }
+
+    .muted-link {
+      background: none;
+      color: var(--accent);
+      padding: 0;
+      border: 0;
+      font-weight: 700;
+    }
+
+    .small {
+      font-size: 13px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section id="screen-home" class="card stack">
+      <div>
+        <div class="brand">help.debs</div>
+        <h1>Acesso à plataforma</h1>
+        <p>Versão simples para testar cadastro, login e o primeiro fluxo depois da entrada.</p>
+      </div>
+
+      <div class="actions">
+        <button id="go-login">Entrar</button>
+        <button id="go-signup" class="secondary">Criar conta</button>
+      </div>
+    </section>
+
+    <section id="screen-signup" class="card stack hidden">
+      <div>
+        <div class="brand">help.debs</div>
+        <h2>Criar conta</h2>
+        <p>Preencha só o básico. Diagnóstico e objetivo ficam para depois.</p>
+      </div>
+
+      <div>
+        <label for="signup-name">Nome completo</label>
+        <input id="signup-name" type="text" placeholder="Seu nome completo" />
+      </div>
+
+      <div>
+        <label for="signup-email">Email</label>
+        <input id="signup-email" type="email" placeholder="voce@email.com" />
+      </div>
+
+      <div>
+        <label for="signup-password">Senha</label>
+        <input id="signup-password" type="password" placeholder="Crie uma senha" />
+      </div>
+
+      <div class="actions">
+        <button id="signup-btn">Criar conta</button>
+        <button class="secondary back-home">Voltar</button>
+      </div>
+    </section>
+
+    <section id="screen-login" class="card stack hidden">
+      <div>
+        <div class="brand">help.debs</div>
+        <h2>Entrar</h2>
+        <p>Faça login com o email e a senha cadastrados.</p>
+      </div>
+
+      <div>
+        <label for="login-email">Email</label>
+        <input id="login-email" type="email" placeholder="voce@email.com" />
+      </div>
+
+      <div>
+        <label for="login-password">Senha</label>
+        <input id="login-password" type="password" placeholder="Sua senha" />
+      </div>
+
+      <div class="actions">
+        <button id="login-btn">Entrar</button>
+        <button class="secondary back-home">Voltar</button>
+      </div>
+    </section>
+
+    <section id="screen-dashboard" class="card stack hidden">
+      <div class="topbar">
+        <div>
+          <div class="brand">help.debs</div>
+          <h2>Área logada</h2>
+        </div>
+        <button id="logout-btn" class="secondary">Sair</button>
+      </div>
+
+      <p id="welcome-text">Carregando perfil...</p>
+
+      <div class="actions">
+        <button id="start-diagnostic-btn">Começar diagnóstico</button>
+        <button id="load-profile-btn" class="secondary">Ver meus dados</button>
+      </div>
+
+      <pre id="profile-output" class="status info hidden"></pre>
+    </section>
+
+    <section id="screen-diagnostic" class="card stack hidden">
+      <div>
+        <div class="brand">help.debs</div>
+        <h2>Diagnóstico inicial</h2>
+        <p>Essa etapa já serve para alimentar o sistema com dados reais.</p>
+      </div>
+
+      <div>
+        <label for="diagnostic-level">Como você descreveria seu nível hoje?</label>
+        <input id="diagnostic-level" type="text" placeholder="Ex: A2, B1, B2..." />
+      </div>
+
+      <div>
+        <label for="diagnostic-goal">Qual é seu principal objetivo com o inglês?</label>
+        <textarea id="diagnostic-goal" placeholder="Ex: melhorar speaking para reuniões, viajar, entrevistas..."></textarea>
+      </div>
+
+      <div class="actions">
+        <button id="save-diagnostic-btn">Salvar diagnóstico</button>
+        <button id="back-dashboard-btn" class="secondary">Voltar</button>
+      </div>
+    </section>
+
+    <div id="status-box" class="status info hidden"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "SUA_URL_AQUI";
+    const SUPABASE_ANON_KEY = "SUA_ANON_KEY_AQUI";
+
+    const screens = {
+      home: document.getElementById("screen-home"),
+      signup: document.getElementById("screen-signup"),
+      login: document.getElementById("screen-login"),
+      dashboard: document.getElementById("screen-dashboard"),
+      diagnostic: document.getElementById("screen-diagnostic")
+    };
+
+    const statusBox = document.getElementById("status-box");
+    const profileOutput = document.getElementById("profile-output");
+    const welcomeText = document.getElementById("welcome-text");
+
+    function showScreen(name) {
+      Object.values(screens).forEach(screen => screen.classList.add("hidden"));
+      screens[name].classList.remove("hidden");
+    }
+
+    function setStatus(message, type = "info") {
+      statusBox.textContent = message;
+      statusBox.className = `status ${type}`;
+      statusBox.classList.remove("hidden");
+    }
+
+    function clearStatus() {
+      statusBox.textContent = "";
+      statusBox.className = "status info hidden";
+    }
+
+    if (SUPABASE_URL === "SUA_URL_AQUI" || SUPABASE_ANON_KEY === "SUA_ANON_KEY_AQUI") {
+      setStatus("Falta colar sua SUPABASE_URL e sua SUPABASE_ANON_KEY no arquivo HTML.", "error");
+    }
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    document.getElementById("go-login").addEventListener("click", () => {
+      clearStatus();
+      showScreen("login");
+    });
+
+    document.getElementById("go-signup").addEventListener("click", () => {
+      clearStatus();
+      showScreen("signup");
+    });
+
+    document.querySelectorAll(".back-home").forEach(btn => {
+      btn.addEventListener("click", () => {
+        clearStatus();
+        showScreen("home");
+      });
+    });
+
+    document.getElementById("back-dashboard-btn").addEventListener("click", () => {
+      clearStatus();
+      showScreen("dashboard");
+    });
+
+    document.getElementById("signup-btn").addEventListener("click", signup);
+    document.getElementById("login-btn").addEventListener("click", login);
+    document.getElementById("logout-btn").addEventListener("click", logout);
+    document.getElementById("load-profile-btn").addEventListener("click", loadProfile);
+    document.getElementById("start-diagnostic-btn").addEventListener("click", openDiagnostic);
+    document.getElementById("save-diagnostic-btn").addEventListener("click", saveDiagnostic);
+
+    async function signup() {
+      clearStatus();
+      const fullName = document.getElementById("signup-name").value.trim();
+      const email = document.getElementById("signup-email").value.trim();
+      const password = document.getElementById("signup-password").value;
+
+      if (!fullName || !email || !password) {
+        setStatus("Preencha nome completo, email e senha.", "error");
+        return;
+      }
+
+      const { data, error } = await supabase.auth.signUp({ email, password });
+
+      if (error) {
+        setStatus(error.message, "error");
+        return;
+      }
+
+      const user = data.user;
+
+      if (!user) {
+        setStatus("Conta criada, mas o usuário não foi retornado. Veja se o Supabase está exigindo confirmação por email.", "error");
+        return;
+      }
+
+      const { error: profileError } = await supabase.from("profiles").upsert({
+        id: user.id,
+        full_name: fullName,
+        email: email
+      });
+
+      if (profileError) {
+        setStatus(profileError.message, "error");
+        return;
+      }
+
+      welcomeText.textContent = `Bem-vinda, ${fullName}.`;
+      setStatus("Conta criada com sucesso. Agora você já pode seguir para o diagnóstico inicial.", "success");
+      showScreen("dashboard");
+    }
+
+    async function login() {
+      clearStatus();
+      const email = document.getElementById("login-email").value.trim();
+      const password = document.getElementById("login-password").value;
+
+      if (!email || !password) {
+        setStatus("Preencha email e senha.", "error");
+        return;
+      }
+
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        setStatus(error.message, "error");
+        return;
+      }
+
+      await refreshWelcome();
+      setStatus("Login realizado com sucesso.", "success");
+      showScreen("dashboard");
+    }
+
+    async function logout() {
+      await supabase.auth.signOut();
+      profileOutput.classList.add("hidden");
+      profileOutput.textContent = "";
+      setStatus("Sessão encerrada.", "info");
+      showScreen("home");
+    }
+
+    async function loadProfile() {
+      clearStatus();
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+
+      if (userError || !userData.user) {
+        setStatus("Nenhum usuário logado.", "error");
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", userData.user.id)
+        .single();
+
+      if (error) {
+        setStatus(error.message, "error");
+        return;
+      }
+
+      profileOutput.textContent = JSON.stringify(data, null, 2);
+      profileOutput.classList.remove("hidden");
+    }
+
+    async function openDiagnostic() {
+      clearStatus();
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) {
+        setStatus("Faça login primeiro.", "error");
+        showScreen("login");
+        return;
+      }
+      showScreen("diagnostic");
+    }
+
+    async function saveDiagnostic() {
+      clearStatus();
+      const nivel = document.getElementById("diagnostic-level").value.trim();
+      const objetivo = document.getElementById("diagnostic-goal").value.trim();
+
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      if (userError || !userData.user) {
+        setStatus("Nenhum usuário logado.", "error");
+        return;
+      }
+
+      const { error } = await supabase
+        .from("profiles")
+        .update({ nivel: nivel || null, objetivo: objetivo || null })
+        .eq("id", userData.user.id);
+
+      if (error) {
+        setStatus(error.message, "error");
+        return;
+      }
+
+      setStatus("Diagnóstico salvo com sucesso.", "success");
+      showScreen("dashboard");
+      await refreshWelcome();
+    }
+
+    async function refreshWelcome() {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) {
+        welcomeText.textContent = "Nenhum usuário logado.";
+        return;
+      }
+
+      const { data } = await supabase
+        .from("profiles")
+        .select("full_name, nivel")
+        .eq("id", userData.user.id)
+        .single();
+
+      if (!data) {
+        welcomeText.textContent = "Usuário logado.";
+        return;
+      }
+
+      welcomeText.textContent = data.nivel
+        ? `Bem-vinda, ${data.full_name}. Nível atual salvo: ${data.nivel}.`
+        : `Bem-vinda, ${data.full_name}. Seu diagnóstico ainda não foi preenchido.`;
+    }
+
+    async function boot() {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        await refreshWelcome();
+        showScreen("dashboard");
+      } else {
+        showScreen("home");
+      }
+    }
+
+    boot();
+  </script>
+</body>
+</html>
