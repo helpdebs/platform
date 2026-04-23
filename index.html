@@ -8,8 +8,7 @@
     :root {
       --bg: #f6f7fb;
       --card: #ffffff;
-      --text: #1c1c28;const SUPABASE_URL = "https://pgdanuifukzisyyummpz.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_81NM6F08rsXXSCgjWl4iSg_v99cdVpo";
+      --text: #1c1c28;
       --muted: #6a6a7a;
       --border: #dcddea;
       --accent: #7c6cff;
@@ -64,8 +63,14 @@ const SUPABASE_ANON_KEY = "sb_publishable_81NM6F08rsXXSCgjWl4iSg_v99cdVpo";
       text-transform: uppercase;
     }
 
-    .stack { display: grid; gap: 14px; }
-    .hidden { display: none !important; }
+    .stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
 
     label {
       display: block;
@@ -112,6 +117,11 @@ const SUPABASE_ANON_KEY = "sb_publishable_81NM6F08rsXXSCgjWl4iSg_v99cdVpo";
       border: 1px solid var(--border);
     }
 
+    button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
     .topbar {
       display: flex;
       align-items: center;
@@ -146,11 +156,6 @@ const SUPABASE_ANON_KEY = "sb_publishable_81NM6F08rsXXSCgjWl4iSg_v99cdVpo";
     .status.info {
       color: #334;
       background: #fafaff;
-    }
-
-    .small {
-      font-size: 13px;
-      color: var(--muted);
     }
   </style>
 </head>
@@ -267,8 +272,8 @@ const SUPABASE_ANON_KEY = "sb_publishable_81NM6F08rsXXSCgjWl4iSg_v99cdVpo";
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-   const SUPABASE_URL = "https://pgdanuifukzisyyummpz.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_81NM6F08rsXXSCgjWl4iSg_v99cdVpo";
+    const SUPABASE_URL = "https://pgdanuifukzisyummpz.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_81NM6F08rsXXSCgjWl4iSg_v99cdVpo";
 
     const screens = {
       home: document.getElementById("screen-home"),
@@ -281,6 +286,18 @@ const SUPABASE_ANON_KEY = "sb_publishable_81NM6F08rsXXSCgjWl4iSg_v99cdVpo";
     const statusBox = document.getElementById("status-box");
     const profileOutput = document.getElementById("profile-output");
     const welcomeText = document.getElementById("welcome-text");
+
+    const goLoginBtn = document.getElementById("go-login");
+    const goSignupBtn = document.getElementById("go-signup");
+    const signupBtn = document.getElementById("signup-btn");
+    const loginBtn = document.getElementById("login-btn");
+    const logoutBtn = document.getElementById("logout-btn");
+    const loadProfileBtn = document.getElementById("load-profile-btn");
+    const startDiagnosticBtn = document.getElementById("start-diagnostic-btn");
+    const saveDiagnosticBtn = document.getElementById("save-diagnostic-btn");
+    const backDashboardBtn = document.getElementById("back-dashboard-btn");
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     function showScreen(name) {
       Object.values(screens).forEach(screen => screen.classList.add("hidden"));
@@ -298,116 +315,159 @@ const SUPABASE_ANON_KEY = "sb_publishable_81NM6F08rsXXSCgjWl4iSg_v99cdVpo";
       statusBox.className = "status info hidden";
     }
 
-    if (SUPABASE_URL === "SUA_URL_AQUI" || SUPABASE_ANON_KEY === "SUA_ANON_KEY_AQUI") {
-      setStatus("Falta colar sua SUPABASE_URL e sua SUPABASE_ANON_KEY no arquivo HTML.", "error");
+    function setButtonLoading(button, isLoading, loadingText, originalText) {
+      button.disabled = isLoading;
+      button.textContent = isLoading ? loadingText : originalText;
     }
 
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    async function ensureProfile(user, fallbackName = "", fallbackEmail = "") {
+      const fullNameFromMeta = user.user_metadata?.full_name || fallbackName || "";
+      const emailFromUser = user.email || fallbackEmail || "";
 
-    document.getElementById("go-login").addEventListener("click", () => {
-      clearStatus();
-      showScreen("login");
-    });
+      const payload = {
+        id: user.id,
+        full_name: fullNameFromMeta,
+        email: emailFromUser
+      };
 
-    document.getElementById("go-signup").addEventListener("click", () => {
-      clearStatus();
-      showScreen("signup");
-    });
+      const { error } = await supabase
+        .from("profiles")
+        .upsert(payload);
 
-    document.querySelectorAll(".back-home").forEach(btn => {
-      btn.addEventListener("click", () => {
-        clearStatus();
-        showScreen("home");
-      });
-    });
+      return error;
+    }
 
-    document.getElementById("back-dashboard-btn").addEventListener("click", () => {
-      clearStatus();
-      showScreen("dashboard");
-    });
+    async function refreshWelcome() {
+      const { data: userData, error: userError } = await supabase.auth.getUser();
 
-    document.getElementById("signup-btn").addEventListener("click", signup);
-    document.getElementById("login-btn").addEventListener("click", login);
-    document.getElementById("logout-btn").addEventListener("click", logout);
-    document.getElementById("load-profile-btn").addEventListener("click", loadProfile);
-    document.getElementById("start-diagnostic-btn").addEventListener("click", openDiagnostic);
-    document.getElementById("save-diagnostic-btn").addEventListener("click", saveDiagnostic);
+      if (userError || !userData.user) {
+        welcomeText.textContent = "Nenhum usuário logado.";
+        return;
+      }
+
+      const user = userData.user;
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("full_name, nivel")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (error) {
+        welcomeText.textContent = "Usuário logado.";
+        return;
+      }
+
+      const nome = data?.full_name || user.user_metadata?.full_name || "usuária";
+
+      welcomeText.textContent = data?.nivel
+        ? `Bem-vinda, ${nome}. Nível atual salvo: ${data.nivel}.`
+        : `Bem-vinda, ${nome}. Seu diagnóstico ainda não foi preenchido.`;
+    }
 
     async function signup() {
       clearStatus();
+      setButtonLoading(signupBtn, true, "Criando conta...", "Criar conta");
 
-      const fullName = document.getElementById("signup-name").value.trim();
-      const email = document.getElementById("signup-email").value.trim();
-      const password = document.getElementById("signup-password").value;
+      try {
+        const fullName = document.getElementById("signup-name").value.trim();
+        const email = document.getElementById("signup-email").value.trim();
+        const password = document.getElementById("signup-password").value;
 
-      if (!fullName || !email || !password) {
-        setStatus("Preencha nome completo, email e senha.", "error");
-        return;
-      }
+        if (!fullName || !email || !password) {
+          setStatus("Preencha nome completo, email e senha.", "error");
+          return;
+        }
 
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password
-      });
-
-      if (error) {
-        setStatus(error.message, "error");
-        return;
-      }
-
-      const user = data.user;
-
-      if (!user) {
-        setStatus("Conta criada, mas o usuário não foi retornado. Veja se o Supabase está exigindo confirmação por email.", "error");
-        return;
-      }
-
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .upsert({
-          id: user.id,
-          full_name: fullName,
-          email: email
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              full_name: fullName
+            }
+          }
         });
 
-      if (profileError) {
-        setStatus(profileError.message, "error");
-        return;
-      }
+        if (error) {
+          setStatus(error.message, "error");
+          return;
+        }
 
-      welcomeText.textContent = `Bem-vinda, ${fullName}.`;
-      setStatus("Conta criada com sucesso. Agora você já pode seguir para o diagnóstico inicial.", "success");
-      showScreen("dashboard");
+        const user = data.user;
+
+        if (!user) {
+          setStatus("Conta criada, mas o usuário não foi retornado pelo Auth.", "error");
+          return;
+        }
+
+        const profileError = await ensureProfile(user, fullName, email);
+
+        if (profileError) {
+          setStatus(
+            "A conta foi criada no Auth, mas houve falha ao salvar o perfil em profiles:\n" + profileError.message,
+            "error"
+          );
+          return;
+        }
+
+        await refreshWelcome();
+        setStatus("Conta criada com sucesso.", "success");
+        showScreen("dashboard");
+      } catch (err) {
+        setStatus("Erro inesperado no cadastro: " + err.message, "error");
+      } finally {
+        setButtonLoading(signupBtn, false, "Criando conta...", "Criar conta");
+      }
     }
 
     async function login() {
       clearStatus();
+      setButtonLoading(loginBtn, true, "Entrando...", "Entrar");
 
-      const email = document.getElementById("login-email").value.trim();
-      const password = document.getElementById("login-password").value;
+      try {
+        const email = document.getElementById("login-email").value.trim();
+        const password = document.getElementById("login-password").value;
 
-      if (!email || !password) {
-        setStatus("Preencha email e senha.", "error");
-        return;
+        if (!email || !password) {
+          setStatus("Preencha email e senha.", "error");
+          return;
+        }
+
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (error) {
+          setStatus(error.message, "error");
+          return;
+        }
+
+        if (data.user) {
+          await ensureProfile(data.user);
+        }
+
+        await refreshWelcome();
+        setStatus("Login realizado com sucesso.", "success");
+        showScreen("dashboard");
+      } catch (err) {
+        setStatus("Erro inesperado no login: " + err.message, "error");
+      } finally {
+        setButtonLoading(loginBtn, false, "Entrando...", "Entrar");
       }
+    }
 
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
+    async function logout() {
+      clearStatus();
+
+      const { error } = await supabase.auth.signOut();
 
       if (error) {
         setStatus(error.message, "error");
         return;
       }
 
-      await refreshWelcome();
-      setStatus("Login realizado com sucesso.", "success");
-      showScreen("dashboard");
-    }
-
-    async function logout() {
-      await supabase.auth.signOut();
       profileOutput.classList.add("hidden");
       profileOutput.textContent = "";
       setStatus("Sessão encerrada.", "info");
@@ -428,10 +488,15 @@ const SUPABASE_ANON_KEY = "sb_publishable_81NM6F08rsXXSCgjWl4iSg_v99cdVpo";
         .from("profiles")
         .select("*")
         .eq("id", userData.user.id)
-        .single();
+        .maybeSingle();
 
       if (error) {
         setStatus(error.message, "error");
+        return;
+      }
+
+      if (!data) {
+        setStatus("Perfil ainda não encontrado em profiles.", "error");
         return;
       }
 
@@ -455,61 +520,56 @@ const SUPABASE_ANON_KEY = "sb_publishable_81NM6F08rsXXSCgjWl4iSg_v99cdVpo";
 
     async function saveDiagnostic() {
       clearStatus();
+      setButtonLoading(saveDiagnosticBtn, true, "Salvando...", "Salvar diagnóstico");
 
-      const nivel = document.getElementById("diagnostic-level").value.trim();
-      const objetivo = document.getElementById("diagnostic-goal").value.trim();
+      try {
+        const nivel = document.getElementById("diagnostic-level").value.trim();
+        const objetivo = document.getElementById("diagnostic-goal").value.trim();
 
-      const { data: userData, error: userError } = await supabase.auth.getUser();
+        const { data: userData, error: userError } = await supabase.auth.getUser();
 
-      if (userError || !userData.user) {
-        setStatus("Nenhum usuário logado.", "error");
-        return;
+        if (userError || !userData.user) {
+          setStatus("Nenhum usuário logado.", "error");
+          return;
+        }
+
+        const { error } = await supabase
+          .from("profiles")
+          .update({
+            nivel: nivel || null,
+            objetivo: objetivo || null
+          })
+          .eq("id", userData.user.id);
+
+        if (error) {
+          setStatus(error.message, "error");
+          return;
+        }
+
+        setStatus("Diagnóstico salvo com sucesso.", "success");
+        showScreen("dashboard");
+        await refreshWelcome();
+      } catch (err) {
+        setStatus("Erro inesperado ao salvar diagnóstico: " + err.message, "error");
+      } finally {
+        setButtonLoading(saveDiagnosticBtn, false, "Salvando...", "Salvar diagnóstico");
       }
-
-      const { error } = await supabase
-        .from("profiles")
-        .update({
-          nivel: nivel || null,
-          objetivo: objetivo || null
-        })
-        .eq("id", userData.user.id);
-
-      if (error) {
-        setStatus(error.message, "error");
-        return;
-      }
-
-      setStatus("Diagnóstico salvo com sucesso.", "success");
-      showScreen("dashboard");
-      await refreshWelcome();
-    }
-
-    async function refreshWelcome() {
-      const { data: userData } = await supabase.auth.getUser();
-
-      if (!userData.user) {
-        welcomeText.textContent = "Nenhum usuário logado.";
-        return;
-      }
-
-      const { data } = await supabase
-        .from("profiles")
-        .select("full_name, nivel")
-        .eq("id", userData.user.id)
-        .single();
-
-      if (!data) {
-        welcomeText.textContent = "Usuário logado.";
-        return;
-      }
-
-      welcomeText.textContent = data.nivel
-        ? `Bem-vinda, ${data.full_name}. Nível atual salvo: ${data.nivel}.`
-        : `Bem-vinda, ${data.full_name}. Seu diagnóstico ainda não foi preenchido.`;
     }
 
     async function boot() {
-      const { data } = await supabase.auth.getSession();
+      if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+        setStatus("Falta configurar SUPABASE_URL e SUPABASE_ANON_KEY.", "error");
+        showScreen("home");
+        return;
+      }
+
+      const { data, error } = await supabase.auth.getSession();
+
+      if (error) {
+        setStatus(error.message, "error");
+        showScreen("home");
+        return;
+      }
 
       if (data.session) {
         await refreshWelcome();
@@ -518,6 +578,47 @@ const SUPABASE_ANON_KEY = "sb_publishable_81NM6F08rsXXSCgjWl4iSg_v99cdVpo";
         showScreen("home");
       }
     }
+
+    goLoginBtn.addEventListener("click", () => {
+      clearStatus();
+      showScreen("login");
+    });
+
+    goSignupBtn.addEventListener("click", () => {
+      clearStatus();
+      showScreen("signup");
+    });
+
+    document.querySelectorAll(".back-home").forEach(btn => {
+      btn.addEventListener("click", () => {
+        clearStatus();
+        showScreen("home");
+      });
+    });
+
+    backDashboardBtn.addEventListener("click", () => {
+      clearStatus();
+      showScreen("dashboard");
+    });
+
+    signupBtn.addEventListener("click", signup);
+    loginBtn.addEventListener("click", login);
+    logoutBtn.addEventListener("click", logout);
+    loadProfileBtn.addEventListener("click", loadProfile);
+    startDiagnosticBtn.addEventListener("click", openDiagnostic);
+    saveDiagnosticBtn.addEventListener("click", saveDiagnostic);
+
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "SIGNED_OUT") {
+        profileOutput.classList.add("hidden");
+        profileOutput.textContent = "";
+        showScreen("home");
+      }
+
+      if (session?.user && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) {
+        await refreshWelcome();
+      }
+    });
 
     boot();
   </script>
