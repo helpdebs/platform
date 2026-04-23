@@ -2,9 +2,8 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Help Debs • Login</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Help Debs • Criar conta</title>
   <style>
     :root {
       --bg: #f6f7fb;
@@ -15,132 +14,226 @@
       --accent: #7c6cff;
       --danger: #c73434;
       --success: #1f8f53;
+      --info: #334;
     }
+
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      font-family: Arial;
+      font-family: Arial, Helvetica, sans-serif;
       background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      padding: 24px;
     }
 
     .card {
-      background: white;
-      padding: 24px;
-      border-radius: 16px;
-      width: 320px;
+      width: 100%;
+      max-width: 360px;
+      background: var(--card);
       border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+    }
+
+    h1 {
+      margin: 0 0 18px;
+      font-size: 22px;
+    }
+
+    .field {
+      margin-bottom: 12px;
     }
 
     input {
       width: 100%;
-      margin-bottom: 10px;
-      padding: 10px;
-      border-radius: 8px;
+      padding: 12px 14px;
       border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 15px;
+      outline: none;
     }
 
     button {
       width: 100%;
-      padding: 10px;
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
       background: var(--accent);
       color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
     }
 
     button:disabled {
-      opacity: 0.6;
+      opacity: 0.75;
+      cursor: not-allowed;
     }
 
     .status {
-      margin-top: 10px;
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 10px;
       font-size: 14px;
+      line-height: 1.4;
+      border: 1px solid var(--border);
+      background: #fff;
+      white-space: pre-wrap;
+      display: none;
     }
 
-    .error { color: var(--danger); }
-    .success { color: var(--success); }
+    .status.show {
+      display: block;
+    }
 
+    .status.error {
+      color: var(--danger);
+      border-color: #f0c7c7;
+      background: #fff5f5;
+    }
+
+    .status.success {
+      color: var(--success);
+      border-color: #c8ebd7;
+      background: #f3fff7;
+    }
+
+    .status.info {
+      color: var(--info);
+      background: #fafaff;
+    }
+
+    .hint {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
   </style>
 </head>
-
 <body>
+  <div class="card">
+    <h1>Criar conta</h1>
 
-<div class="card">
-  <h2>Criar conta</h2>
+    <div class="field">
+      <input id="name" type="text" placeholder="Nome completo" />
+    </div>
 
-  <input id="name" placeholder="Nome completo">
-  <input id="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Senha">
+    <div class="field">
+      <input id="email" type="email" placeholder="Email" />
+    </div>
 
-  <button id="btn">Criar conta</button>
+    <div class="field">
+      <input id="password" type="password" placeholder="Senha" />
+    </div>
 
-  <div id="status" class="status"></div>
-</div>
+    <button id="btn" type="button">Criar conta</button>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <div id="status" class="status"></div>
 
-<script>
-  const SUPABASE_URL = "https://pgdanuifukzisyummpz.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_81NM6F08rsXXSCgjWl4iSg_v99cdVpo";
+    <div class="hint">
+      Use um email que ainda não exista no Supabase.
+    </div>
+  </div>
 
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://pgdanuifukzisyummpz.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_81NM6F08rsXXSCgjWl4iSg_v99cdVpo";
 
-  const btn = document.getElementById("btn");
-  const statusBox = document.getElementById("status");
+    const btn = document.getElementById("btn");
+    const statusBox = document.getElementById("status");
+    const nameInput = document.getElementById("name");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
 
-  btn.onclick = async () => {
-
-    const name = document.getElementById("name").value;
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    if (!name || !email || !password) {
-      statusBox.innerText = "Preencha tudo";
-      statusBox.className = "status error";
-      return;
+    function setStatus(message, type = "info") {
+      statusBox.textContent = message;
+      statusBox.className = `status show ${type}`;
     }
 
-    btn.disabled = true;
-    btn.innerText = "Criando...";
+    function clearStatus() {
+      statusBox.textContent = "";
+      statusBox.className = "status";
+    }
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { full_name: name }
+    function setLoading(isLoading) {
+      btn.disabled = isLoading;
+      btn.textContent = isLoading ? "Criando..." : "Criar conta";
+    }
+
+    btn.addEventListener("click", async () => {
+      clearStatus();
+      setLoading(true);
+
+      try {
+        const fullName = nameInput.value.trim();
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+
+        if (!fullName || !email || !password) {
+          setStatus("Preencha nome, email e senha.", "error");
+          return;
+        }
+
+        if (!window.supabase || !window.supabase.createClient) {
+          setStatus("A biblioteca do Supabase não carregou. Isso impede o cadastro.", "error");
+          return;
+        }
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        setStatus("Tentando criar a conta...", "info");
+
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              full_name: fullName
+            }
+          }
+        });
+
+        if (error) {
+          setStatus("Erro no cadastro:\n" + error.message, "error");
+          return;
+        }
+
+        if (!data.user) {
+          setStatus("O Auth respondeu sem retornar usuário. Confira a configuração de confirmação por email.", "error");
+          return;
+        }
+
+        const { error: profileError } = await supabase
+          .from("profiles")
+          .upsert({
+            id: data.user.id,
+            full_name: fullName,
+            email: email
+          });
+
+        if (profileError) {
+          setStatus(
+            "Conta criada no Auth, mas falhou ao salvar em profiles:\n" + profileError.message,
+            "error"
+          );
+          return;
+        }
+
+        setStatus("Conta criada com sucesso.", "success");
+      } catch (err) {
+        setStatus("Erro inesperado:\n" + err.message, "error");
+      } finally {
+        setLoading(false);
       }
     });
-
-    if (error) {
-      statusBox.innerText = error.message;
-      statusBox.className = "status error";
-      btn.disabled = false;
-      btn.innerText = "Criar conta";
-      return;
-    }
-
-    const user = data.user;
-
-    if (user) {
-      await supabase.from("profiles").upsert({
-        id: user.id,
-        full_name: name,
-        email: email
-      });
-    }
-
-    statusBox.innerText = "Conta criada!";
-    statusBox.className = "status success";
-
-    btn.disabled = false;
-    btn.innerText = "Criar conta";
-  };
-</script>
-
+  </script>
 </body>
 </html>
