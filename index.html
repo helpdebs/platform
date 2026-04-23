@@ -16,9 +16,7 @@
       --success: #1f8f53;
       --info: #334;
     }
-
     * { box-sizing: border-box; }
-
     body {
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
@@ -30,7 +28,6 @@
       justify-content: center;
       padding: 24px;
     }
-
     .card {
       width: 100%;
       max-width: 360px;
@@ -38,18 +35,13 @@
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 24px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.04);
     }
-
     h1 {
       margin: 0 0 18px;
       font-size: 22px;
     }
-
-    .field {
-      margin-bottom: 12px;
-    }
-
+    .field { margin-bottom: 12px; }
     input {
       width: 100%;
       padding: 12px 14px;
@@ -58,7 +50,6 @@
       font-size: 15px;
       outline: none;
     }
-
     button {
       width: 100%;
       border: 0;
@@ -70,12 +61,10 @@
       background: var(--accent);
       color: white;
     }
-
     button:disabled {
       opacity: 0.75;
       cursor: not-allowed;
     }
-
     .status {
       margin-top: 14px;
       padding: 12px 14px;
@@ -87,28 +76,21 @@
       white-space: pre-wrap;
       display: none;
     }
-
-    .status.show {
-      display: block;
-    }
-
+    .status.show { display: block; }
     .status.error {
       color: var(--danger);
       border-color: #f0c7c7;
       background: #fff5f5;
     }
-
     .status.success {
       color: var(--success);
       border-color: #c8ebd7;
       background: #f3fff7;
     }
-
     .status.info {
       color: var(--info);
       background: #fafaff;
     }
-
     .hint {
       margin-top: 10px;
       color: var(--muted);
@@ -137,15 +119,13 @@
 
     <div id="status" class="status"></div>
 
-    <div class="hint">
-      Use um email que ainda não exista no Supabase.
-    </div>
+    <div class="hint">Use um email novo para testar.</div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const SUPABASE_URL = "https://pgdanuifukzisyummpz.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_81NM6F08rsXXSCgjWl4iSg_v99cdVpo";
+    const SUPABASE_KEY = "COLE_AQUI_A_KEY_COMPLETA_COPIADA_PELO_BOTAO";
 
     const btn = document.getElementById("btn");
     const statusBox = document.getElementById("status");
@@ -182,22 +162,35 @@
           return;
         }
 
-        if (!window.supabase || !window.supabase.createClient) {
-          setStatus("A biblioteca do Supabase não carregou. Isso impede o cadastro.", "error");
+        if (!window.supabase?.createClient) {
+          setStatus("A biblioteca do Supabase não carregou.", "error");
           return;
         }
 
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        setStatus("Tentando criar a conta...", "info");
+        setStatus("Testando conexão com o Supabase...", "info");
+
+        const ping = await fetch(`${SUPABASE_URL}/auth/v1/settings`, {
+          method: "GET",
+          headers: {
+            apikey: SUPABASE_KEY
+          }
+        });
+
+        if (!ping.ok) {
+          const txt = await ping.text();
+          setStatus(`A conexão respondeu, mas com erro ${ping.status}:\n${txt}`, "error");
+          return;
+        }
+
+        setStatus("Conexão ok. Tentando criar a conta...", "info");
 
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            data: {
-              full_name: fullName
-            }
+            data: { full_name: fullName }
           }
         });
 
@@ -207,7 +200,7 @@
         }
 
         if (!data.user) {
-          setStatus("O Auth respondeu sem retornar usuário. Confira a configuração de confirmação por email.", "error");
+          setStatus("O Auth respondeu sem retornar usuário.", "error");
           return;
         }
 
@@ -220,16 +213,13 @@
           });
 
         if (profileError) {
-          setStatus(
-            "Conta criada no Auth, mas falhou ao salvar em profiles:\n" + profileError.message,
-            "error"
-          );
+          setStatus("Conta criada no Auth, mas falhou ao salvar em profiles:\n" + profileError.message, "error");
           return;
         }
 
         setStatus("Conta criada com sucesso.", "success");
       } catch (err) {
-        setStatus("Erro inesperado:\n" + err.message, "error");
+        setStatus("Erro de rede:\n" + err.message + "\n\nSe continuar assim, quase sempre é key incompleta ou bloqueio do navegador.", "error");
       } finally {
         setLoading(false);
       }
