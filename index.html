@@ -147,14 +147,6 @@
       background: #fafaff;
     }
 
-    .muted-link {
-      background: none;
-      color: var(--accent);
-      padding: 0;
-      border: 0;
-      font-weight: 700;
-    }
-
     .small {
       font-size: 13px;
       color: var(--muted);
@@ -342,6 +334,7 @@
 
     async function signup() {
       clearStatus();
+
       const fullName = document.getElementById("signup-name").value.trim();
       const email = document.getElementById("signup-email").value.trim();
       const password = document.getElementById("signup-password").value;
@@ -351,7 +344,10 @@
         return;
       }
 
-      const { data, error } = await supabase.auth.signUp({ email, password });
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password
+      });
 
       if (error) {
         setStatus(error.message, "error");
@@ -365,11 +361,13 @@
         return;
       }
 
-      const { error: profileError } = await supabase.from("profiles").upsert({
-        id: user.id,
-        full_name: fullName,
-        email: email
-      });
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .upsert({
+          id: user.id,
+          full_name: fullName,
+          email: email
+        });
 
       if (profileError) {
         setStatus(profileError.message, "error");
@@ -383,6 +381,7 @@
 
     async function login() {
       clearStatus();
+
       const email = document.getElementById("login-email").value.trim();
       const password = document.getElementById("login-password").value;
 
@@ -391,7 +390,10 @@
         return;
       }
 
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
 
       if (error) {
         setStatus(error.message, "error");
@@ -413,6 +415,7 @@
 
     async function loadProfile() {
       clearStatus();
+
       const { data: userData, error: userError } = await supabase.auth.getUser();
 
       if (userError || !userData.user) {
@@ -437,21 +440,26 @@
 
     async function openDiagnostic() {
       clearStatus();
+
       const { data: userData } = await supabase.auth.getUser();
+
       if (!userData.user) {
         setStatus("Faça login primeiro.", "error");
         showScreen("login");
         return;
       }
+
       showScreen("diagnostic");
     }
 
     async function saveDiagnostic() {
       clearStatus();
+
       const nivel = document.getElementById("diagnostic-level").value.trim();
       const objetivo = document.getElementById("diagnostic-goal").value.trim();
 
       const { data: userData, error: userError } = await supabase.auth.getUser();
+
       if (userError || !userData.user) {
         setStatus("Nenhum usuário logado.", "error");
         return;
@@ -459,7 +467,10 @@
 
       const { error } = await supabase
         .from("profiles")
-        .update({ nivel: nivel || null, objetivo: objetivo || null })
+        .update({
+          nivel: nivel || null,
+          objetivo: objetivo || null
+        })
         .eq("id", userData.user.id);
 
       if (error) {
@@ -474,6 +485,7 @@
 
     async function refreshWelcome() {
       const { data: userData } = await supabase.auth.getUser();
+
       if (!userData.user) {
         welcomeText.textContent = "Nenhum usuário logado.";
         return;
@@ -497,6 +509,7 @@
 
     async function boot() {
       const { data } = await supabase.auth.getSession();
+
       if (data.session) {
         await refreshWelcome();
         showScreen("dashboard");
@@ -507,6 +520,5 @@
 
     boot();
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </body>
 </html>
