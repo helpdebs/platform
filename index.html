@@ -2,8 +2,9 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Help Debs • Teste de Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Help Debs • Login</title>
+
   <style>
     :root {
       --bg: #f6f7fb;
@@ -12,615 +13,134 @@
       --muted: #6a6a7a;
       --border: #dcddea;
       --accent: #7c6cff;
-      --accent-2: #eae7ff;
       --danger: #c73434;
       --success: #1f8f53;
     }
 
-    * { box-sizing: border-box; }
-
     body {
       margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: Arial;
       background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 24px;
-    }
-
-    .app {
-      width: 100%;
-      max-width: 460px;
+      height: 100vh;
     }
 
     .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
+      background: white;
       padding: 24px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.04);
-    }
-
-    h1, h2 {
-      margin: 0 0 8px;
-    }
-
-    p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.45;
-    }
-
-    .brand {
-      font-size: 14px;
-      color: var(--accent);
-      font-weight: 700;
-      margin-bottom: 8px;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-
-    .stack {
-      display: grid;
-      gap: 14px;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    label {
-      display: block;
-      font-size: 14px;
-      margin-bottom: 6px;
-      font-weight: 600;
-    }
-
-    input, textarea {
-      width: 100%;
+      border-radius: 16px;
+      width: 320px;
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px 14px;
-      font-size: 15px;
-      background: #fff;
     }
 
-    textarea {
-      min-height: 110px;
-      resize: vertical;
-      font-family: inherit;
-    }
-
-    .actions {
-      display: grid;
-      gap: 10px;
-      margin-top: 4px;
+    input {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
     }
 
     button {
-      border: 0;
-      border-radius: 10px;
-      padding: 12px 16px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
+      width: 100%;
+      padding: 10px;
       background: var(--accent);
       color: white;
-    }
-
-    button.secondary {
-      background: white;
-      color: var(--text);
-      border: 1px solid var(--border);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
     }
 
     button:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-    }
-
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 14px;
+      opacity: 0.6;
     }
 
     .status {
-      margin-top: 16px;
-      padding: 12px 14px;
-      border-radius: 10px;
+      margin-top: 10px;
       font-size: 14px;
-      line-height: 1.4;
-      border: 1px solid var(--border);
-      background: #fff;
-      white-space: pre-wrap;
     }
 
-    .status.error {
-      color: var(--danger);
-      border-color: #f0c7c7;
-      background: #fff5f5;
-    }
+    .error { color: var(--danger); }
+    .success { color: var(--success); }
 
-    .status.success {
-      color: var(--success);
-      border-color: #c8ebd7;
-      background: #f3fff7;
-    }
-
-    .status.info {
-      color: #334;
-      background: #fafaff;
-    }
   </style>
 </head>
+
 <body>
-  <div class="app">
-    <section id="screen-home" class="card stack">
-      <div>
-        <div class="brand">help.debs</div>
-        <h1>Acesso à plataforma</h1>
-        <p>Versão simples para testar cadastro, login e o primeiro fluxo depois da entrada.</p>
-      </div>
 
-      <div class="actions">
-        <button id="go-login">Entrar</button>
-        <button id="go-signup" class="secondary">Criar conta</button>
-      </div>
-    </section>
+<div class="card">
+  <h2>Criar conta</h2>
 
-    <section id="screen-signup" class="card stack hidden">
-      <div>
-        <div class="brand">help.debs</div>
-        <h2>Criar conta</h2>
-        <p>Preencha só o básico. Diagnóstico e objetivo ficam para depois.</p>
-      </div>
+  <input id="name" placeholder="Nome completo">
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Senha">
 
-      <div>
-        <label for="signup-name">Nome completo</label>
-        <input id="signup-name" type="text" placeholder="Seu nome completo" />
-      </div>
+  <button id="btn">Criar conta</button>
 
-      <div>
-        <label for="signup-email">Email</label>
-        <input id="signup-email" type="email" placeholder="voce@email.com" />
-      </div>
+  <div id="status" class="status"></div>
+</div>
 
-      <div>
-        <label for="signup-password">Senha</label>
-        <input id="signup-password" type="password" placeholder="Crie uma senha" />
-      </div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-      <div class="actions">
-        <button id="signup-btn">Criar conta</button>
-        <button class="secondary back-home">Voltar</button>
-      </div>
-    </section>
+<script>
+  const SUPABASE_URL = "https://pgdanuifukzisyummpz.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_81NM6F08rsXXSCgjWl4iSg_v99cdVpo";
 
-    <section id="screen-login" class="card stack hidden">
-      <div>
-        <div class="brand">help.debs</div>
-        <h2>Entrar</h2>
-        <p>Faça login com o email e a senha cadastrados.</p>
-      </div>
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-      <div>
-        <label for="login-email">Email</label>
-        <input id="login-email" type="email" placeholder="voce@email.com" />
-      </div>
+  const btn = document.getElementById("btn");
+  const statusBox = document.getElementById("status");
 
-      <div>
-        <label for="login-password">Senha</label>
-        <input id="login-password" type="password" placeholder="Sua senha" />
-      </div>
+  btn.onclick = async () => {
 
-      <div class="actions">
-        <button id="login-btn">Entrar</button>
-        <button class="secondary back-home">Voltar</button>
-      </div>
-    </section>
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-    <section id="screen-dashboard" class="card stack hidden">
-      <div class="topbar">
-        <div>
-          <div class="brand">help.debs</div>
-          <h2>Área logada</h2>
-        </div>
-        <button id="logout-btn" class="secondary">Sair</button>
-      </div>
-
-      <p id="welcome-text">Carregando perfil...</p>
-
-      <div class="actions">
-        <button id="start-diagnostic-btn">Começar diagnóstico</button>
-        <button id="load-profile-btn" class="secondary">Ver meus dados</button>
-      </div>
-
-      <pre id="profile-output" class="status info hidden"></pre>
-    </section>
-
-    <section id="screen-diagnostic" class="card stack hidden">
-      <div>
-        <div class="brand">help.debs</div>
-        <h2>Diagnóstico inicial</h2>
-        <p>Essa etapa já serve para alimentar o sistema com dados reais.</p>
-      </div>
-
-      <div>
-        <label for="diagnostic-level">Como você descreveria seu nível hoje?</label>
-        <input id="diagnostic-level" type="text" placeholder="Ex: A2, B1, B2..." />
-      </div>
-
-      <div>
-        <label for="diagnostic-goal">Qual é seu principal objetivo com o inglês?</label>
-        <textarea id="diagnostic-goal" placeholder="Ex: melhorar speaking para reuniões, viajar, entrevistas..."></textarea>
-      </div>
-
-      <div class="actions">
-        <button id="save-diagnostic-btn">Salvar diagnóstico</button>
-        <button id="back-dashboard-btn" class="secondary">Voltar</button>
-      </div>
-    </section>
-
-    <div id="status-box" class="status info hidden"></div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const SUPABASE_URL = "https://pgdanuifukzisyummpz.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_81NM6F08rsXXSCgjWl4iSg_v99cdVpo";
-
-    const screens = {
-      home: document.getElementById("screen-home"),
-      signup: document.getElementById("screen-signup"),
-      login: document.getElementById("screen-login"),
-      dashboard: document.getElementById("screen-dashboard"),
-      diagnostic: document.getElementById("screen-diagnostic")
-    };
-
-    const statusBox = document.getElementById("status-box");
-    const profileOutput = document.getElementById("profile-output");
-    const welcomeText = document.getElementById("welcome-text");
-
-    const goLoginBtn = document.getElementById("go-login");
-    const goSignupBtn = document.getElementById("go-signup");
-    const signupBtn = document.getElementById("signup-btn");
-    const loginBtn = document.getElementById("login-btn");
-    const logoutBtn = document.getElementById("logout-btn");
-    const loadProfileBtn = document.getElementById("load-profile-btn");
-    const startDiagnosticBtn = document.getElementById("start-diagnostic-btn");
-    const saveDiagnosticBtn = document.getElementById("save-diagnostic-btn");
-    const backDashboardBtn = document.getElementById("back-dashboard-btn");
-
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    function showScreen(name) {
-      Object.values(screens).forEach(screen => screen.classList.add("hidden"));
-      screens[name].classList.remove("hidden");
+    if (!name || !email || !password) {
+      statusBox.innerText = "Preencha tudo";
+      statusBox.className = "status error";
+      return;
     }
 
-    function setStatus(message, type = "info") {
-      statusBox.textContent = message;
-      statusBox.className = `status ${type}`;
-      statusBox.classList.remove("hidden");
+    btn.disabled = true;
+    btn.innerText = "Criando...";
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { full_name: name }
+      }
+    });
+
+    if (error) {
+      statusBox.innerText = error.message;
+      statusBox.className = "status error";
+      btn.disabled = false;
+      btn.innerText = "Criar conta";
+      return;
     }
 
-    function clearStatus() {
-      statusBox.textContent = "";
-      statusBox.className = "status info hidden";
-    }
+    const user = data.user;
 
-    function setButtonLoading(button, isLoading, loadingText, originalText) {
-      button.disabled = isLoading;
-      button.textContent = isLoading ? loadingText : originalText;
-    }
-
-    async function ensureProfile(user, fallbackName = "", fallbackEmail = "") {
-      const fullNameFromMeta = user.user_metadata?.full_name || fallbackName || "";
-      const emailFromUser = user.email || fallbackEmail || "";
-
-      const payload = {
+    if (user) {
+      await supabase.from("profiles").upsert({
         id: user.id,
-        full_name: fullNameFromMeta,
-        email: emailFromUser
-      };
-
-      const { error } = await supabase
-        .from("profiles")
-        .upsert(payload);
-
-      return error;
-    }
-
-    async function refreshWelcome() {
-      const { data: userData, error: userError } = await supabase.auth.getUser();
-
-      if (userError || !userData.user) {
-        welcomeText.textContent = "Nenhum usuário logado.";
-        return;
-      }
-
-      const user = userData.user;
-
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("full_name, nivel")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      if (error) {
-        welcomeText.textContent = "Usuário logado.";
-        return;
-      }
-
-      const nome = data?.full_name || user.user_metadata?.full_name || "usuária";
-
-      welcomeText.textContent = data?.nivel
-        ? `Bem-vinda, ${nome}. Nível atual salvo: ${data.nivel}.`
-        : `Bem-vinda, ${nome}. Seu diagnóstico ainda não foi preenchido.`;
-    }
-
-    async function signup() {
-      clearStatus();
-      setButtonLoading(signupBtn, true, "Criando conta...", "Criar conta");
-
-      try {
-        const fullName = document.getElementById("signup-name").value.trim();
-        const email = document.getElementById("signup-email").value.trim();
-        const password = document.getElementById("signup-password").value;
-
-        if (!fullName || !email || !password) {
-          setStatus("Preencha nome completo, email e senha.", "error");
-          return;
-        }
-
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              full_name: fullName
-            }
-          }
-        });
-
-        if (error) {
-          setStatus(error.message, "error");
-          return;
-        }
-
-        const user = data.user;
-
-        if (!user) {
-          setStatus("Conta criada, mas o usuário não foi retornado pelo Auth.", "error");
-          return;
-        }
-
-        const profileError = await ensureProfile(user, fullName, email);
-
-        if (profileError) {
-          setStatus(
-            "A conta foi criada no Auth, mas houve falha ao salvar o perfil em profiles:\n" + profileError.message,
-            "error"
-          );
-          return;
-        }
-
-        await refreshWelcome();
-        setStatus("Conta criada com sucesso.", "success");
-        showScreen("dashboard");
-      } catch (err) {
-        setStatus("Erro inesperado no cadastro: " + err.message, "error");
-      } finally {
-        setButtonLoading(signupBtn, false, "Criando conta...", "Criar conta");
-      }
-    }
-
-    async function login() {
-      clearStatus();
-      setButtonLoading(loginBtn, true, "Entrando...", "Entrar");
-
-      try {
-        const email = document.getElementById("login-email").value.trim();
-        const password = document.getElementById("login-password").value;
-
-        if (!email || !password) {
-          setStatus("Preencha email e senha.", "error");
-          return;
-        }
-
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email,
-          password
-        });
-
-        if (error) {
-          setStatus(error.message, "error");
-          return;
-        }
-
-        if (data.user) {
-          await ensureProfile(data.user);
-        }
-
-        await refreshWelcome();
-        setStatus("Login realizado com sucesso.", "success");
-        showScreen("dashboard");
-      } catch (err) {
-        setStatus("Erro inesperado no login: " + err.message, "error");
-      } finally {
-        setButtonLoading(loginBtn, false, "Entrando...", "Entrar");
-      }
-    }
-
-    async function logout() {
-      clearStatus();
-
-      const { error } = await supabase.auth.signOut();
-
-      if (error) {
-        setStatus(error.message, "error");
-        return;
-      }
-
-      profileOutput.classList.add("hidden");
-      profileOutput.textContent = "";
-      setStatus("Sessão encerrada.", "info");
-      showScreen("home");
-    }
-
-    async function loadProfile() {
-      clearStatus();
-
-      const { data: userData, error: userError } = await supabase.auth.getUser();
-
-      if (userError || !userData.user) {
-        setStatus("Nenhum usuário logado.", "error");
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", userData.user.id)
-        .maybeSingle();
-
-      if (error) {
-        setStatus(error.message, "error");
-        return;
-      }
-
-      if (!data) {
-        setStatus("Perfil ainda não encontrado em profiles.", "error");
-        return;
-      }
-
-      profileOutput.textContent = JSON.stringify(data, null, 2);
-      profileOutput.classList.remove("hidden");
-    }
-
-    async function openDiagnostic() {
-      clearStatus();
-
-      const { data: userData } = await supabase.auth.getUser();
-
-      if (!userData.user) {
-        setStatus("Faça login primeiro.", "error");
-        showScreen("login");
-        return;
-      }
-
-      showScreen("diagnostic");
-    }
-
-    async function saveDiagnostic() {
-      clearStatus();
-      setButtonLoading(saveDiagnosticBtn, true, "Salvando...", "Salvar diagnóstico");
-
-      try {
-        const nivel = document.getElementById("diagnostic-level").value.trim();
-        const objetivo = document.getElementById("diagnostic-goal").value.trim();
-
-        const { data: userData, error: userError } = await supabase.auth.getUser();
-
-        if (userError || !userData.user) {
-          setStatus("Nenhum usuário logado.", "error");
-          return;
-        }
-
-        const { error } = await supabase
-          .from("profiles")
-          .update({
-            nivel: nivel || null,
-            objetivo: objetivo || null
-          })
-          .eq("id", userData.user.id);
-
-        if (error) {
-          setStatus(error.message, "error");
-          return;
-        }
-
-        setStatus("Diagnóstico salvo com sucesso.", "success");
-        showScreen("dashboard");
-        await refreshWelcome();
-      } catch (err) {
-        setStatus("Erro inesperado ao salvar diagnóstico: " + err.message, "error");
-      } finally {
-        setButtonLoading(saveDiagnosticBtn, false, "Salvando...", "Salvar diagnóstico");
-      }
-    }
-
-    async function boot() {
-      if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-        setStatus("Falta configurar SUPABASE_URL e SUPABASE_ANON_KEY.", "error");
-        showScreen("home");
-        return;
-      }
-
-      const { data, error } = await supabase.auth.getSession();
-
-      if (error) {
-        setStatus(error.message, "error");
-        showScreen("home");
-        return;
-      }
-
-      if (data.session) {
-        await refreshWelcome();
-        showScreen("dashboard");
-      } else {
-        showScreen("home");
-      }
-    }
-
-    goLoginBtn.addEventListener("click", () => {
-      clearStatus();
-      showScreen("login");
-    });
-
-    goSignupBtn.addEventListener("click", () => {
-      clearStatus();
-      showScreen("signup");
-    });
-
-    document.querySelectorAll(".back-home").forEach(btn => {
-      btn.addEventListener("click", () => {
-        clearStatus();
-        showScreen("home");
+        full_name: name,
+        email: email
       });
-    });
+    }
 
-    backDashboardBtn.addEventListener("click", () => {
-      clearStatus();
-      showScreen("dashboard");
-    });
+    statusBox.innerText = "Conta criada!";
+    statusBox.className = "status success";
 
-    signupBtn.addEventListener("click", signup);
-    loginBtn.addEventListener("click", login);
-    logoutBtn.addEventListener("click", logout);
-    loadProfileBtn.addEventListener("click", loadProfile);
-    startDiagnosticBtn.addEventListener("click", openDiagnostic);
-    saveDiagnosticBtn.addEventListener("click", saveDiagnostic);
+    btn.disabled = false;
+    btn.innerText = "Criar conta";
+  };
+</script>
 
-    supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === "SIGNED_OUT") {
-        profileOutput.classList.add("hidden");
-        profileOutput.textContent = "";
-        showScreen("home");
-      }
-
-      if (session?.user && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) {
-        await refreshWelcome();
-      }
-    });
-
-    boot();
-  </script>
 </body>
 </html>
